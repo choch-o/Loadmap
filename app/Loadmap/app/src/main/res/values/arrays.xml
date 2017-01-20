@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spinnerArray">
+        <item>숙제</item>
+    <item>프로젝트</item>
+    <item>퀴즈</item>
+    <item>실험</item>
+    <item>조모임</item>
+    <item>시험공부</item>
+    <item>예습복습</item>
+    </string-array>
+</resources>

@@ -13,4 +13,5 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="spinnerPrompt">작업 종류를 선택하세요</string>
 </resources>
