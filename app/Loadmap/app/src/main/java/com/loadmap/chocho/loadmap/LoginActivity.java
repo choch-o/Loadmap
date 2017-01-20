@@ -32,6 +32,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -68,6 +69,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private View mProgressView;
     private View mLoginFormView;
 
+    SessionManager session;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +80,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             if (this.checkSelfPermission(android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED)
                 requestPermissions(new String[]{android.Manifest.permission.INTERNET}, PERMISSIONS_REQUEST_INTERNET);
         }
+
+        session = new SessionManager(getApplicationContext());
 
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
@@ -326,17 +331,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mPassword = password;
         }
 
-        /*
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mProgressDialog = new ProgressDialog(LoginActivity.this);
-            mProgressDialog.setTitle("Loadmap");
-            mProgressDialog.setMessage("Loading courses...");
-            mProgressDialog.setIndeterminate(false);
-            mProgressDialog.show();
-        }
-        */
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
@@ -352,17 +346,25 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Document klmsDoc = Jsoup.connect(klms_url)
                         .cookies(loginCookies)
                         .get();
+
+                System.out.println("%$$%$%$%$%$");
                 System.out.println(klmsDoc.html());
+                System.out.println("%$$%$%$%$%$");
+
                 Elements curriculum = klmsDoc.select("div[class=course_info_detail] h4[class='media-heading']");
                 Elements professors = klmsDoc.select("div[class=course_info_detail] p");
                 courseTitle = new  String[curriculum.size()];
                 courseProfessor = new  String[curriculum.size()];
-                System.out.println("$$$$$$$");
+
                 for (int i = 0; i < curriculum.size(); i++) {
                     courseTitle[i] = curriculum.get(i).attr("title");
                     courseProfessor[i] = professors.get(i).text();
                     System.out.println(courseTitle[i]);
                     System.out.println(courseProfessor[i]);
+                }
+
+                if (curriculum.size() == 0) {
+                    return false;
                 }
 
             } catch (Exception e) {
@@ -378,9 +380,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
             if (success) {
+                session.createLoginSession("Test Name", mUsername);
                 Intent i = new Intent(LoginActivity.this, CourseListActivity.class);
-                i.putExtra("status", title);
-                // startActivity(i);
+                i.putExtra("status", mUsername);
+                startActivity(i);
+                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
