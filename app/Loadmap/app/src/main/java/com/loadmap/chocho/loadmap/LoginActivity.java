@@ -3,7 +3,10 @@ package com.loadmap.chocho.loadmap;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,6 +22,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,8 +33,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -44,13 +55,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
+    private static final int PERMISSIONS_REQUEST_INTERNET = 1;
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -66,6 +72,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (this.checkSelfPermission(android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED)
+                requestPermissions(new String[]{android.Manifest.permission.INTERNET}, PERMISSIONS_REQUEST_INTERNET);
+        }
+
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
@@ -137,13 +149,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+        Log.d("Login Attempt", "Attempt");
         if (mAuthTask != null) {
             return;
         }
@@ -192,7 +204,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        // return email.contains("@");
+        return true;
     }
 
     private boolean isPasswordValid(String password) {
@@ -295,35 +308,68 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+        final String USER_AGENT = "\"Mozilla/5.0 (Windows NT\" +\n" +
+                "          \" 6.1; WOW64) AppleWebKit/535.2 (KHTML, like Gecko) Chrome/15.0.874.120 Safari/535.2\"";
 
-        private final String mEmail;
+        private final String mUsername;
         private final String mPassword;
+        private final String klms_url = "http://klms.kaist.ac.kr/index.php?lang=ko";
+        private final String login_url = "https://klms.kaist.ac.kr/login/index.php";
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
+        Map<String, String> loginCookies = new HashMap<>();
+
+        String[] courseTitle;
+        String[] courseProfessor;
+
+        UserLoginTask(String username, String password) {
+            mUsername = username;
             mPassword = password;
         }
 
+        /*
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(LoginActivity.this);
+            mProgressDialog.setTitle("Loadmap");
+            mProgressDialog.setMessage("Loading courses...");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.show();
+        }
+        */
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-
             try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+
+                Connection.Response loginRes = Jsoup.connect(login_url)
+                        .data("username", mUsername, "password", mPassword)
+                        .method(Connection.Method.POST)
+                        .execute();
+
+                loginCookies = loginRes.cookies();
+
+                Document klmsDoc = Jsoup.connect(klms_url)
+                        .cookies(loginCookies)
+                        .get();
+                System.out.println(klmsDoc.html());
+                Elements curriculum = klmsDoc.select("div[class=course_info_detail] h4[class='media-heading']");
+                Elements professors = klmsDoc.select("div[class=course_info_detail] p");
+                courseTitle = new  String[curriculum.size()];
+                courseProfessor = new  String[curriculum.size()];
+                System.out.println("$$$$$$$");
+                for (int i = 0; i < curriculum.size(); i++) {
+                    courseTitle[i] = curriculum.get(i).attr("title");
+                    courseProfessor[i] = professors.get(i).text();
+                    System.out.println(courseTitle[i]);
+                    System.out.println(courseProfessor[i]);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
                 return false;
             }
 
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 
@@ -331,9 +377,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
-                finish();
+                Intent i = new Intent(LoginActivity.this, CourseListActivity.class);
+                i.putExtra("status", title);
+                // startActivity(i);
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
