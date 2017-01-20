@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import java.net.URLEncoder;
 import java.util.Date;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     String resultText;
     String date, time;
     int taskstatus =0;
-    String serverURL = "52.78.101.202:3000";
+    String serverURL = "http://52.78.101.202:3000";
     double randomKey;
 
     // taskstatus 0 = 작업 종료, taskstatus 1 = 작업 중, taskstatus 2 = 작업 일시 정지
@@ -200,6 +201,7 @@ public class MainActivity extends AppCompatActivity {
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
+                        Toast.makeText(MainActivity.this, "SERVER CONNECTION is DONE", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
