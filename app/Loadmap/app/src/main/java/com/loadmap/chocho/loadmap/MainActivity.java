@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 
 import java.net.URLEncoder;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
 
 import com.google.gson.JsonObject;
@@ -53,12 +56,33 @@ public class MainActivity extends AppCompatActivity {
     String serverURL = "http://52.78.101.202:3000";
     double randomKey;
 
+    Button logoutButton;
+    SessionManager session;
+
     // taskstatus 0 = 작업 종료, taskstatus 1 = 작업 중, taskstatus 2 = 작업 일시 정지
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.main_activity);
+
+        session = new SessionManager(getApplicationContext());
+
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        String name = user.get(SessionManager.KEY_NAME);
+        String username = user.get(SessionManager.KEY_USERNAME);
+
+        logoutButton = (Button) findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                session.logoutUser();
+            }
+        });
 
         String[] option = getResources().getStringArray(R.array.spinnerArray);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
