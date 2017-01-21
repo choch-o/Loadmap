@@ -1,0 +1,27 @@
+{
+  "name": "final_project",
+  "version": "1.0.0",
+  "description": "at last it's final",
+  "main": "powerWeb.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "http": "^0.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/choch-o/Loadmap.git"
+  },
+  "keywords": [
+    "loadmap"
+  ],
+  "author": "sanha",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/choch-o/Loadmap/issues"
+  },
+  "homepage": "https://github.com/choch-o/Loadmap#readme"
+}
