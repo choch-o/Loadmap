@@ -329,6 +329,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mPassword;
         private final String klms_url = "http://klms.kaist.ac.kr/index.php?lang=ko";
         private final String login_url = "https://klms.kaist.ac.kr/login/index.php";
+        private String name;
 
         Map<String, String> loginCookies = new HashMap<>();
 
@@ -361,7 +362,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                 Elements curriculum = klmsDoc.select("div[class=course_info_detail] h4[class='media-heading']");
                 Elements professors = klmsDoc.select("div[class=course_info_detail] p");
-                String name = klmsDoc.select("div[class=dropdown userinfo] a img").attr("alt");
+                name = klmsDoc.select("div[class=dropdown userinfo] a img").attr("alt");
+
                 courseTitle = new String[curriculum.size()];
                 courseProfessor = new String[curriculum.size()];
                 courseCodes = new String[curriculum.size()];
@@ -376,28 +378,21 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                     int indexOfLParen = rawTitle.indexOf("(");
                     int lastIndexOfRParen = rawTitle.lastIndexOf(")");
-                    // courseCodes[i] = rawTitle.substring(indexOfLParen + 1, lastIndexOfRParen);
                     courses[i].setCode(rawTitle.substring(indexOfLParen + 1, lastIndexOfRParen));
 
                     int indexOfLBracket = rawTitle.indexOf("[");
                     int indexOfRBracket = rawTitle.indexOf("]");
-
                     if ((indexOfLBracket != -1) && (indexOfRBracket != -1)) {
                         courses[i].setSemester(rawTitle.substring(indexOfLBracket + 1, indexOfRBracket));
                         courses[i].setName(rawTitle.substring(indexOfRBracket + 2, indexOfLParen - 1));
-//                        courseSemesters[i] = rawTitle.substring(indexOfLBracket + 1, indexOfRBracket);
-//                        courseTitle[i] = rawTitle.substring(indexOfRBracket + 2, indexOfLParen - 1);
                     } else {
                         courses[i].setName(rawTitle.substring(0, indexOfLParen - 1));
-                        // courseTitle[i] = rawTitle.substring(0, indexOfLParen - 1);
                     }
 
                     int indexOfColon = rawProf.indexOf(":");
                     if (indexOfColon + 2 < rawProf.length()) {
-                        // courseProfessor[i] = rawProf.substring(rawProf.indexOf(":") + 2);
                         courses[i].setProfessor(rawProf.substring(rawProf.indexOf(":") + 2));
                     } else {
-                        // courseProfessor[i] = "";
                         courses[i].setProfessor("");
                     }
                 }
@@ -426,6 +421,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 Bundle mBundle = new Bundle();
                 mBundle.putParcelableArray(PAR_KEY, courses);
                 i.putExtras(mBundle);
+                i.putExtra("name", name);
+                i.putExtra("username", mUsername);
                 startActivity(i);
                 finish();
             } else {
