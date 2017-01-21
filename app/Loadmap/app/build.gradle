@@ -43,4 +43,5 @@ dependencies {
     compile 'com.github.delight-im:Android-SimpleLocation:v1.0.1'
     compile 'org.jsoup:jsoup:1.10.2'
     testCompile 'junit:junit:4.12'
+    compile 'com.squareup.okhttp3:okhttp:3.5.0'
 }
