@@ -12,7 +12,7 @@ mongoose.connect('mongodb://localhost/loadmap');
 var Schema = mongoose.Schema;
 
 var taskDataSchema = new Schema({
-  randomkey : {type:Number, required : true},
+  username : {type:String, required : true},
   subject : {type:String, required : true},
   tasktype : {type:String, required : true},
   date : {type:String, required : true},
@@ -39,7 +39,7 @@ app.post('/courses', api.saveCourses);
 app.post('/task/data', function(req,res){
   console.log("[task/data] Got request");
 
-  Task.find({randomkey:req.body['randomkey']}, function(err, result){
+  Task.find({username:req.body['username']}, function(err, result){
     console.log("          "+result)
     if(result.length>0){
       var newTask={};
@@ -47,23 +47,24 @@ app.post('/task/data', function(req,res){
       if(req.body['subject']) newTask.subject=req.body['subject'];
       if(req.body['tasktype']) newTask.tasktype=req.body['tasktype'];
       if(req.body['date']) newTask.date=req.body['date'];
-      if(req.body['time']) newTask.subject=req.body['time'];
+      if(req.body['time']) newTask.time=req.body['time'];
       if(req.body['taskstatus']) newTask.taskstatus=req.body['taskstatus'];
 
-      Task.findOneAndUpdate({randomkey:req.body['randomkey']}, newTask, {}, function(err,results){
+      Task.findOneAndUpdate({username:req.body['username']}, newTask, {}, function(err,results){
         if (err) throw err;
         console.log("DONE UPDATE TASK " + results);
       });
     } else {
       var newTask = {
-        randomkey : req.body['randomkey'],
+        username : req.body['username'],
+        subject : req.body['subject'],
         tasktype : req.body['tasktype'],
         date : req.body['date'],
         time : req.body['time'],
         taskstatus : req.body['taskstatus']
       };
 
-      User.findOneAndUpdate({randomkey : req.body['randomkey']}, newTask, {upsert: true, new: true}, function (err, results){
+      Task.findOneAndUpdate({username : req.body['username']}, newTask, {upsert: true, new: true}, function (err, results){
         if(err) throw err;
         console.log("DONE ENROLL NEW TASK " + results);
       });
