@@ -37,9 +37,39 @@ exports.getCourses = function(req, res) {
 }
 
 exports.getTasks = function(req, res) {
-  Task.find({username: req.params.user_id}, function (error, tasks) {
-    res.send(tasks);
+  Task.aggregate([
+    { $match: {
+      username: req.params.user_id
+    }},
+    { $group: {
+      _id: "$subject",
+      totalDuration: { $sum: "$duration" },
+      tasks: { $push: "$$ROOT" }
+    }}
+  ], function (err, result) {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(result);
+    res.send(result);
   });
+  /*
+  Task.find({username: req.params.user_id})
+    .sort({datetime: 'ascending'})
+    .aggregate([
+      {
+        $group: {
+          _id: '$subject',
+          totalDuration: { $sum: '$duration' },
+          count: { $sum: 1 }
+        }
+      }
+    ])
+    .exec(function (error, tasks) {
+      res.send(tasks);
+    });
+    */
 }
 
 exports.viewData = function(req, res) {
@@ -76,7 +106,7 @@ exports.taskData = function(req, res) {
         subject : req.body['subject'],
         tasktype : req.body['tasktype'],
         datetime : req.body['datetime'],
-        taskstatus : req.body['taskstatus']
+        taskstatus : req.body['taskstatus'],
         duration : req.body['duration']
       };
 
