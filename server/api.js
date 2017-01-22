@@ -76,7 +76,7 @@ exports.taskData = function(req, res) {
         subject : req.body['subject'],
         tasktype : req.body['tasktype'],
         datetime : req.body['datetime'],
-        taskstatus : req.body['taskstatus']
+        taskstatus : req.body['taskstatus'],
         duration : req.body['duration']
       };
 
