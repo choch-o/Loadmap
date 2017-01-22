@@ -53,7 +53,6 @@ public class TaskTracker extends Fragment {
 
     String resultText;
     String resultText2;
-    String taskdurationstring;
     String selectedDate, selectedTime;
     Date date;
     static Long startDateTime;
@@ -144,7 +143,7 @@ public class TaskTracker extends Fragment {
 
 
         startDateTime = c.getTimeInMillis()+32400000;
-        finishDateTime = c.getTimeInMillis()+32400000;
+//        finishDateTime = c.getTimeInMillis()+32400000;
 
 
 
@@ -171,8 +170,6 @@ public class TaskTracker extends Fragment {
 
             }
         });
-
-
 
         spinner.setAdapter(adapter);
         getSpinner(rootView, R.id.spinner).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -304,7 +301,7 @@ public class TaskTracker extends Fragment {
             json.addProperty("tasktype", resultText);
             json.addProperty("subject", resultText2);
             json.addProperty("datetime", startDateTime);
-            json.addProperty("taskstatus", taskstatus);
+            json.addProperty("taskstatus", 1);
             json.addProperty("duration", 0);
             Log.d("JSON INFO", json.toString());
         } catch (Exception e) {
@@ -322,21 +319,21 @@ public class TaskTracker extends Fragment {
     }
 
     public void editVariables() {
-        JsonObject json = new JsonObject();
+        JsonObject json2 = new JsonObject();
         try {
-            json.addProperty("username", username);
-            json.addProperty("tasktype", resultText);
-            json.addProperty("subject", resultText2);
-            json.addProperty("datetime", 0);
-            json.addProperty("taskstatus", taskstatus);
-            json.addProperty("duration", taskdurationinmilli);
-            Log.d("JSON INFO", json.toString());
+            json2.addProperty("username", username);
+            json2.addProperty("tasktype", resultText);
+            json2.addProperty("subject", resultText2);
+            json2.addProperty("datetime", 0);
+            json2.addProperty("taskstatus", 0);
+            json2.addProperty("duration", taskdurationinmilli);
+            Log.d("JSON INFO", json2.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         Ion.with(rootView.getContext()).load(serverURL + "/task/data")
-                .setJsonObjectBody(json).asJsonObject()
+                .setJsonObjectBody(json2).asJsonObject()
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
