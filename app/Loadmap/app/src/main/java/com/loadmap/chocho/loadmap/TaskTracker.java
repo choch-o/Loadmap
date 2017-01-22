@@ -282,8 +282,8 @@ public class TaskTracker extends Fragment {
 //            json.addProperty("professor", MainActivity.professor);
 
             json.addProperty("username", username);
-            json.addProperty("tasktype", URLEncoder.encode(resultText, "utf-8"));
-            json.addProperty("subject", URLEncoder.encode(resultText2, "utf-8"));
+            json.addProperty("tasktype", resultText);
+            json.addProperty("subject", resultText2);
             json.addProperty("date", getDate(df.format(date)));
             json.addProperty("time", getTime(df.format(date)));
             json.addProperty("taskstatus", taskstatus);
