@@ -62,9 +62,9 @@ exports.taskData = function(req, res) {
 
       if(req.body['subject']) newTask.subject=req.body['subject'];
       if(req.body['tasktype']) newTask.tasktype=req.body['tasktype'];
-      if(req.body['date']) newTask.date=req.body['date'];
-      if(req.body['time']) newTask.time=req.body['time'];
+      if(req.body['datetime']) newTask.datetime=req.body['datetime'];
       if(req.body['taskstatus']) newTask.taskstatus=req.body['taskstatus'];
+      if(req.body['duration']) newTask.duration=req.body['duration'];
 
       Task.findOneAndUpdate({username:req.body['username']}, newTask, {}, function(err,results){
         if (err) throw err;
@@ -75,9 +75,9 @@ exports.taskData = function(req, res) {
         username : req.body['username'],
         subject : req.body['subject'],
         tasktype : req.body['tasktype'],
-        date : req.body['date'],
-        time : req.body['time'],
+        datetime : req.body['datetime'],
         taskstatus : req.body['taskstatus']
+        duration : req.body['duration']
       };
 
       Task.findOneAndUpdate({username : req.body['username']}, newTask, {upsert: true, new: true}, function (err, results){
