@@ -10,11 +10,15 @@ import android.widget.Button;
 
 import com.github.mikephil.charting.buffer.BarBuffer;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -26,6 +30,9 @@ import java.util.List;
 public class MyStatistics extends Fragment {
 
     private BarChart barChart;
+    private PieChart pieChart;
+    ArrayList<PieEntry> pieEntries = new ArrayList<PieEntry>();
+    ArrayList<String> pieLabels = new ArrayList<String>();
 
     String serverURL = "http://52.78.52.132:3000";
     private static final String ARG_SECTION_NUMBER = "section_number";
@@ -49,6 +56,8 @@ public class MyStatistics extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_my_statistics, container, false);
 
         barChart = (BarChart) rootView.findViewById(R.id.bar_chart);
+        pieChart = (PieChart) rootView.findViewById(R.id.pie_chart);
+        pieChart.setUsePercentValues(true);
         session = new SessionManager(getActivity());
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
@@ -61,6 +70,8 @@ public class MyStatistics extends Fragment {
                 getTasksFromServer();
             }
         });
+
+        getTasksFromServer();
         return rootView;
     }
 
@@ -86,8 +97,12 @@ public class MyStatistics extends Fragment {
     }
 
     void drawPieChart() {
-        List<PieEntry> entries = new ArrayList<PieEntry>();
+        PieDataSet dataSet = new PieDataSet(pieEntries, "Tasks by Courses");
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+        PieData data = new PieData(dataSet);
 
+        pieChart.setData(data);
+        pieChart.invalidate();
     }
     void getTasksFromServer() {
         OkHttpHandler handler = new OkHttpHandler();
@@ -96,6 +111,14 @@ public class MyStatistics extends Fragment {
         try {
             result = handler.execute(serverURL + "/tasks/" + username).get();
             Log.d("GET TASKS RESULT", result);
+            JSONArray tasksByCourse = new JSONArray(result);
+            for (int i = 0; i < tasksByCourse.length(); i++) {
+                JSONObject obj = tasksByCourse.getJSONObject(i);
+                pieEntries.add(new PieEntry(obj.getLong("totalDuration"), i));
+                pieLabels.add(obj.getString("courseName"));
+//                obj.getString("courseName");
+//                obj.getLong("totalDuration");
+            }
             /*
             JSONArray tasks = new JSONArray(result);
             myTasks = new Task[tasks.length()];
@@ -108,7 +131,7 @@ public class MyStatistics extends Fragment {
                         task.getLong("duration"));
                 Log.d("SORTED TASKS", Long.toString(myTasks[i].getStartTime()));
             }*/
-
+            drawPieChart();
         } catch (Exception e) {
             e.printStackTrace();
         }
