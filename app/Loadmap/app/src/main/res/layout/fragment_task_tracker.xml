@@ -14,16 +14,33 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="과목"
+            android:layout_marginTop="10dp"
+            android:textSize="20dp"/>
 
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner2"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:prompt="@string/spinnerPrompt2"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="종류"
             android:layout_marginTop="10dp"
-            android:textSize="20dp"
-            />
+            android:textSize="20dp"/>
 
         <Spinner
             android:layout_width="wrap_content"
@@ -31,10 +48,7 @@
             android:id="@+id/spinner"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:prompt="@string/spinnerPrompt"
-            />
-
-
+            android:prompt="@string/spinnerPrompt"/>
     </LinearLayout>
 
     <LinearLayout

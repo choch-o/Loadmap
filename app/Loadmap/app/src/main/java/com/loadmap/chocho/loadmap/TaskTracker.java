@@ -1,13 +1,5 @@
 package com.loadmap.chocho.loadmap;
 
-import android.content.Context;
-import android.net.Uri;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
 import android.icu.text.DateFormat;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
@@ -15,20 +7,13 @@ import android.icu.util.TimeZone;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-//import android.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -39,7 +24,6 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Task;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -51,21 +35,26 @@ import java.util.HashMap;
 public class TaskTracker extends Fragment {
 
     int year, month, day, hour, minute;
+    int taskstatus =0;
+    double randomKey;
+
+    View rootView;
     TextView timeView,dateView;
+
+    Button logoutButton;
     Button startButton;
     Button pauseButton;
     Button resumeButton;
     Button stopButton;
+
     String resultText;
     String date, time;
-    int taskstatus =0;
     String serverURL = "http://52.78.101.202:3000";
-    double randomKey;
     String finedMinute;
+
     LinearLayout date_change, time_change;
-    Button logoutButton;
     SessionManager session;
-    View rootView;
+
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -113,7 +102,14 @@ public class TaskTracker extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (getContext(), android.R.layout.simple_spinner_dropdown_item, option);
 
+
+//        과목명 Array에 담아서 받아야 함
+//        String[] option2 = getResources().getStringArray(R.array.spinnerArray2);
+//        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>
+//                (getContext(), android.R.layout.simple_spinner_dropdown_item, option2);
+
         Spinner spinner = (Spinner)rootView.findViewById(R.id.spinner);
+        Spinner spinner2 = (Spinner)rootView.findViewById(R.id.spinner2);
 
         dateView = (TextView)rootView.findViewById(R.id.dateView);
         timeView = (TextView)rootView.findViewById(R.id.timeView);
@@ -162,6 +158,21 @@ public class TaskTracker extends Fragment {
             public void onItemSelected
                     (AdapterView<?> parentView, View selectedView,
                                        int position, long id) {
+                printChecked(selectedView, position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+
+            }
+        });
+
+//        spinner2.setAdapter(adapter2);
+        getSpinner(rootView, R.id.spinner2).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected
+                    (AdapterView<?> parentView, View selectedView,
+                     int position, long id) {
                 printChecked(selectedView, position);
             }
 
@@ -235,6 +246,15 @@ public class TaskTracker extends Fragment {
         resultText="";
         if(spinnerPCheck.getSelectedItemPosition()>0){
             resultText=(String)spinnerPCheck.getAdapter().getItem(spinnerPCheck.getSelectedItemPosition());
+        }
+        if(resultText !=""){
+//            ((TextView)findViewById(R.id.textView1)).setText(resultText);
+        }
+
+        Spinner spinnerPCheck2 = (Spinner)getView().getRootView().findViewById(R.id.spinner2);
+        resultText="";
+        if(spinnerPCheck2.getSelectedItemPosition()>0){
+            resultText=(String)spinnerPCheck2.getAdapter().getItem(spinnerPCheck2.getSelectedItemPosition());
         }
         if(resultText !=""){
 //            ((TextView)findViewById(R.id.textView1)).setText(resultText);
