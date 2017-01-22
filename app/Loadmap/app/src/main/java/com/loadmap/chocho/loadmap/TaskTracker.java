@@ -51,9 +51,11 @@ public class TaskTracker extends Fragment {
     Button stopButton;
 
     String resultText;
+    String resultText2;
 
     Date date;
-    String serverURL = "http://52.78.101.202:3000";
+    // String serverURL = "http://52.78.101.202:3000";
+    String serverURL = "http://52.78.52.132:3000";
 
     String finedMinute;
 
@@ -110,7 +112,7 @@ public class TaskTracker extends Fragment {
 //        과목명 Array에 담아서 받아야 함
 //        String[] option2 = getResources().getStringArray(R.array.spinnerArray2);
 
-        String[] courses = getCourseFromServer();
+        final String[] courses = getCourseFromServer();
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>
                 (getContext(), android.R.layout.simple_spinner_dropdown_item, courses);
 
@@ -169,7 +171,7 @@ public class TaskTracker extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-
+                resultText = "숙제";
             }
         });
 
@@ -184,7 +186,7 @@ public class TaskTracker extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-
+                resultText2 = courses[0];
             }
         });
 
@@ -253,15 +255,17 @@ public class TaskTracker extends Fragment {
             resultText=(String)spinnerPCheck.getAdapter().getItem(spinnerPCheck.getSelectedItemPosition());
         }
         if(resultText !=""){
+            resultText=(String)spinnerPCheck.getAdapter().getItem(0);
 //            ((TextView)findViewById(R.id.textView1)).setText(resultText);
         }
 
         Spinner spinnerPCheck2 = (Spinner)getView().getRootView().findViewById(R.id.spinner2);
-        resultText="";
+        resultText2="";
         if(spinnerPCheck2.getSelectedItemPosition()>0){
-            resultText=(String)spinnerPCheck2.getAdapter().getItem(spinnerPCheck2.getSelectedItemPosition());
+            resultText2=(String)spinnerPCheck2.getAdapter().getItem(spinnerPCheck2.getSelectedItemPosition());
         }
-        if(resultText !=""){
+        if(resultText2 !=""){
+            resultText2=(String)spinnerPCheck2.getAdapter().getItem(0);
 //            ((TextView)findViewById(R.id.textView1)).setText(resultText);
         }
     }
@@ -274,15 +278,16 @@ public class TaskTracker extends Fragment {
         JsonObject json = new JsonObject();
         try {
 //            json.addProperty("IDnumber", MainActivity.IDnumber);
-//            json.addProperty("username", MainActivity.username);
 //            json.addProperty("semester", MainActivity.semester);
 //            json.addProperty("professor", MainActivity.professor);
-//            json.addProperty("subjectCode", MainActivity.subjectCode);
-//            json.addProperty("subjectName", MainActivity.subjectName);
+
+            json.addProperty("username", username);
             json.addProperty("tasktype", URLEncoder.encode(resultText, "utf-8"));
+            json.addProperty("subject", URLEncoder.encode(resultText2, "utf-8"));
             json.addProperty("date", getDate(df.format(date)));
             json.addProperty("time", getTime(df.format(date)));
             json.addProperty("taskstatus", taskstatus);
+            Log.d("JSON INFO", json.toString());
         } catch (Exception e) {
             e.printStackTrace();
         }
