@@ -28,6 +28,9 @@ import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,15 +51,18 @@ public class TaskTracker extends Fragment {
     Button stopButton;
 
     String resultText;
-    // String date, time;
+
     Date date;
     String serverURL = "http://52.78.101.202:3000";
+
     String finedMinute;
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (z Z)");
     LinearLayout date_change, time_change;
     SessionManager session;
 
+    String name;
+    String username;
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -81,16 +87,12 @@ public class TaskTracker extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_task_tracker, container, false);
 
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         session = new SessionManager(getActivity());
 
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
-        String name = user.get(SessionManager.KEY_NAME);
-        String username = user.get(SessionManager.KEY_USERNAME);
+        name = user.get(SessionManager.KEY_NAME);
+        username = user.get(SessionManager.KEY_USERNAME);
 
         logoutButton = (Button)rootView.findViewById(R.id.logout_button);
         logoutButton.setOnClickListener(new View.OnClickListener() {
@@ -107,8 +109,10 @@ public class TaskTracker extends Fragment {
 
 //        과목명 Array에 담아서 받아야 함
 //        String[] option2 = getResources().getStringArray(R.array.spinnerArray2);
-//        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>
-//                (getContext(), android.R.layout.simple_spinner_dropdown_item, option2);
+
+        String[] courses = getCourseFromServer();
+        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>
+                (getContext(), android.R.layout.simple_spinner_dropdown_item, courses);
 
         Spinner spinner = (Spinner)rootView.findViewById(R.id.spinner);
         Spinner spinner2 = (Spinner)rootView.findViewById(R.id.spinner2);
@@ -169,7 +173,7 @@ public class TaskTracker extends Fragment {
             }
         });
 
-//        spinner2.setAdapter(adapter2);
+        spinner2.setAdapter(adapter2);
         getSpinner(rootView, R.id.spinner2).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected
@@ -415,6 +419,30 @@ public class TaskTracker extends Fragment {
         strTime = new String(charTime, 0, charTime.length);
 
         return strTime;
+    }
+
+    String[] getCourseFromServer() {
+        OkHttpHandler handler = new OkHttpHandler();
+
+        String result = null;
+        String[] courses;
+        try {
+            result = handler.execute(serverURL + "/courses/" + username).get();
+            Log.d("GET COURSES RESULT", result);
+            JSONObject userObj = new JSONObject(result);
+            JSONArray courseArr = userObj.getJSONArray("courses");
+            courses = new String[courseArr.length()];
+            for (int i = 0; i < courseArr.length(); i++) {
+
+                courses[i] = courseArr.getJSONObject(i).getString("name");
+                Log.d("COURSE ARR", courses[i]);
+            }
+
+            return courses;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new String[0];
+        }
     }
 }
 
