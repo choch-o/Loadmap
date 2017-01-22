@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.provider.DocumentsContract;
 import android.support.annotation.NonNull;
@@ -60,10 +61,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private static final int PERMISSIONS_REQUEST_INTERNET = 1;
 
+    private final int PRIVATE_MODE = 0;
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+
+    public final static String PAR_KEY = "com.loadmap.chocho.loadmap.par";
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -325,11 +329,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         private final String mPassword;
         private final String klms_url = "http://klms.kaist.ac.kr/index.php?lang=ko";
         private final String login_url = "https://klms.kaist.ac.kr/login/index.php";
+        private String name;
 
         Map<String, String> loginCookies = new HashMap<>();
 
         String[] courseTitle;
         String[] courseProfessor;
+        String[] courseCodes;
+        String[] courseSemesters;
+        Course[] courses;
 
         UserLoginTask(String username, String password) {
             mUsername = username;
@@ -352,20 +360,41 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         .cookies(loginCookies)
                         .get();
 
-                System.out.println("%$$%$%$%$%$");
-                System.out.println(klmsDoc.html());
-                System.out.println("%$$%$%$%$%$");
-
                 Elements curriculum = klmsDoc.select("div[class=course_info_detail] h4[class='media-heading']");
                 Elements professors = klmsDoc.select("div[class=course_info_detail] p");
-                courseTitle = new  String[curriculum.size()];
-                courseProfessor = new  String[curriculum.size()];
+                name = klmsDoc.select("div[class=dropdown userinfo] a img").attr("alt");
+
+                courseTitle = new String[curriculum.size()];
+                courseProfessor = new String[curriculum.size()];
+                courseCodes = new String[curriculum.size()];
+                courseSemesters = new String[curriculum.size()];
+
+                courses = new Course[curriculum.size()];
 
                 for (int i = 0; i < curriculum.size(); i++) {
-                    courseTitle[i] = curriculum.get(i).attr("title");
-                    courseProfessor[i] = professors.get(i).text();
-                    System.out.println(courseTitle[i]);
-                    System.out.println(courseProfessor[i]);
+                    courses[i] = new Course();
+                    String rawTitle = curriculum.get(i).attr("title");
+                    String rawProf = professors.get(i).text();
+
+                    int indexOfLParen = rawTitle.indexOf("(");
+                    int lastIndexOfRParen = rawTitle.lastIndexOf(")");
+                    courses[i].setCode(rawTitle.substring(indexOfLParen + 1, lastIndexOfRParen));
+
+                    int indexOfLBracket = rawTitle.indexOf("[");
+                    int indexOfRBracket = rawTitle.indexOf("]");
+                    if ((indexOfLBracket != -1) && (indexOfRBracket != -1)) {
+                        courses[i].setSemester(rawTitle.substring(indexOfLBracket + 1, indexOfRBracket));
+                        courses[i].setName(rawTitle.substring(indexOfRBracket + 2, indexOfLParen - 1));
+                    } else {
+                        courses[i].setName(rawTitle.substring(0, indexOfLParen - 1));
+                    }
+
+                    int indexOfColon = rawProf.indexOf(":");
+                    if (indexOfColon + 2 < rawProf.length()) {
+                        courses[i].setProfessor(rawProf.substring(rawProf.indexOf(":") + 2));
+                    } else {
+                        courses[i].setProfessor("");
+                    }
                 }
 
                 if (curriculum.size() == 0) {
@@ -385,9 +414,15 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = null;
             showProgress(false);
             if (success) {
+
                 session.createLoginSession("Test Name", mUsername);
+
                 Intent i = new Intent(LoginActivity.this, CourseListActivity.class);
-                i.putExtra("status", mUsername);
+                Bundle mBundle = new Bundle();
+                mBundle.putParcelableArray(PAR_KEY, courses);
+                i.putExtras(mBundle);
+                i.putExtra("name", name);
+                i.putExtra("username", mUsername);
                 startActivity(i);
                 finish();
             } else {
