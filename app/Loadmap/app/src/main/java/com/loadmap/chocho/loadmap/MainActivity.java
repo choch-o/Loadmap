@@ -108,10 +108,11 @@ public class MainActivity extends AppCompatActivity {
             if (position == 0) {
                 return TaskTracker.newInstance(position+1);
             }
-//
-//            if (position == 1) {
-//                return ImageList.newInstance();
-//            }
+
+            if (position == 1) {
+                return MyStatistics.newInstance(position-1);
+            }
+
             return PlaceholderFragment.newInstance(position+1);
         }
 
