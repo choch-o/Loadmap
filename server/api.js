@@ -22,9 +22,11 @@ exports.saveCourses = function(req, res) {
 }
 
 exports.getCourses = function(req, res) {
-  User.findOne({username: req.body.username}, function(error, user) {
+  console.log("REQUEST");
+  console.log(req.params);
+  User.findOne({username: req.params.user_id}, function(error, user) {
     if (user == null) {
-      res.send("not registerd");
+      res.send("User not registerd");
     } else {
       res.send(user);
     }

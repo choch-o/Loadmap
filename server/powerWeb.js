@@ -23,6 +23,8 @@ var Task = mongoose.model('task', taskDataSchema, 'task');
 
 var api = require('./api');
 
+// app.get('/courses', api.getCourses);
+app.get('/courses/:user_id', api.getCourses);
 app.post('/courses', api.saveCourses);
 app.post('/task/data', function(req,res){
   console.log("[task/data] Got request");
