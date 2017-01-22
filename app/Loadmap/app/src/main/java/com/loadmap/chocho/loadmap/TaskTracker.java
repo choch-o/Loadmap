@@ -39,7 +39,8 @@ import java.util.HashMap;
 public class TaskTracker extends Fragment {
 
     int year, month, day, hour, minute;
-    int taskstatus =0;
+    static int taskstatus =0;
+    long taskdurationinmilli;
 
     View rootView;
     TextView timeView,dateView;
@@ -52,9 +53,11 @@ public class TaskTracker extends Fragment {
 
     String resultText;
     String resultText2;
-
+    String taskdurationstring;
+    String selectedDate, selectedTime;
     Date date;
-    // String serverURL = "http://52.78.101.202:3000";
+    static Long startDateTime;
+    static Long finishDateTime;
     String serverURL = "http://52.78.52.132:3000";
 
     String finedMinute;
@@ -65,6 +68,8 @@ public class TaskTracker extends Fragment {
 
     String name;
     String username;
+
+    static Calendar c = Calendar.getInstance();
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -132,8 +137,16 @@ public class TaskTracker extends Fragment {
 
         TimeZone tz;
         date = new Date();
+        selectedDate = getDate(df.format(date));
+        selectedTime = getTime(df.format(date));
 
         tz = TimeZone.getTimeZone("Asia/Seoul"); df.setTimeZone(tz);
+
+
+        startDateTime = c.getTimeInMillis()+32400000;
+        finishDateTime = c.getTimeInMillis()+32400000;
+
+
 
         dateView.setText(getDate(df.format(date)));
         timeView.setText(getTime(df.format(date)));
@@ -155,6 +168,7 @@ public class TaskTracker extends Fragment {
                 MyDialogFragment2 dialogFragment2 = new MyDialogFragment2();
                 dialogFragment2.setTargetFragment(TaskTracker.this, 0);
                 dialogFragment2.show(fm2, "fragment_time");
+
             }
         });
 
@@ -182,11 +196,13 @@ public class TaskTracker extends Fragment {
                     (AdapterView<?> parentView, View selectedView,
                      int position, long id) {
                 printChecked(selectedView, position);
+                Toast.makeText(getContext(),"Something Selected", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
                 resultText2 = courses[0];
+                Toast.makeText(getContext(),courses[0]= "courses[0]", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -194,7 +210,7 @@ public class TaskTracker extends Fragment {
             @Override
             public void onClick(View v) {
                 startButton.setVisibility(View.GONE);
-                pauseButton.setVisibility(View.VISIBLE);
+//                pauseButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.VISIBLE);
                 taskstatus = 1;
                 setVariables();
@@ -202,29 +218,29 @@ public class TaskTracker extends Fragment {
             }
         });
 
-        pauseButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                pauseButton.setVisibility(View.GONE);
-                resumeButton.setVisibility(View.VISIBLE);
-                stopButton.setVisibility(View.GONE);
-                taskstatus = 2;
-                setVariables();
-                //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
-            }
-        });
-
-        resumeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                resumeButton.setVisibility(View.GONE);
-                pauseButton.setVisibility(View.VISIBLE);
-                stopButton.setVisibility(View.VISIBLE);
-                taskstatus = 1;
-                setVariables();
-                //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
-            }
-        });
+//        pauseButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                pauseButton.setVisibility(View.GONE);
+//                resumeButton.setVisibility(View.VISIBLE);
+//                stopButton.setVisibility(View.GONE);
+//                taskstatus = 2;
+//                setVariables();
+//                //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
+//            }
+//        });
+//
+//        resumeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                resumeButton.setVisibility(View.GONE);
+////                pauseButton.setVisibility(View.VISIBLE);
+////                stopButton.setVisibility(View.VISIBLE);
+//                taskstatus = 1;
+//                setVariables();
+//                //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
+//            }
+//        });
 
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,7 +249,10 @@ public class TaskTracker extends Fragment {
                 pauseButton.setVisibility(View.GONE);
                 stopButton.setVisibility(View.GONE);
                 taskstatus = 0;
-                setVariables();
+                taskdurationinmilli = finishDateTime-startDateTime ;
+                Log.d("@@@@@@@@@@@@duration: ", Long.toString(taskdurationinmilli));
+//                getDuration(new Date(), );
+                editVariables();
                 //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
             }
         });
@@ -254,7 +273,7 @@ public class TaskTracker extends Fragment {
         if(spinnerPCheck.getSelectedItemPosition()>0){
             resultText=(String)spinnerPCheck.getAdapter().getItem(spinnerPCheck.getSelectedItemPosition());
         }
-        if(resultText !=""){
+        else{
             resultText=(String)spinnerPCheck.getAdapter().getItem(0);
 //            ((TextView)findViewById(R.id.textView1)).setText(resultText);
         }
@@ -264,8 +283,8 @@ public class TaskTracker extends Fragment {
         if(spinnerPCheck2.getSelectedItemPosition()>0){
             resultText2=(String)spinnerPCheck2.getAdapter().getItem(spinnerPCheck2.getSelectedItemPosition());
         }
-        if(resultText2 !=""){
-            resultText2=(String)spinnerPCheck2.getAdapter().getItem(0);
+        else{
+//            resultText2=(String)spinnerPCheck2.getAdapter().getItem(0);
 //            ((TextView)findViewById(R.id.textView1)).setText(resultText);
         }
     }
@@ -282,11 +301,11 @@ public class TaskTracker extends Fragment {
 //            json.addProperty("professor", MainActivity.professor);
 
             json.addProperty("username", username);
-            json.addProperty("tasktype", URLEncoder.encode(resultText, "utf-8"));
-            json.addProperty("subject", URLEncoder.encode(resultText2, "utf-8"));
-            json.addProperty("date", getDate(df.format(date)));
-            json.addProperty("time", getTime(df.format(date)));
+            json.addProperty("tasktype", resultText);
+            json.addProperty("subject", resultText2);
+            json.addProperty("datetime", startDateTime);
             json.addProperty("taskstatus", taskstatus);
+            json.addProperty("duration", 0);
             Log.d("JSON INFO", json.toString());
         } catch (Exception e) {
             e.printStackTrace();
@@ -297,7 +316,31 @@ public class TaskTracker extends Fragment {
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
-                        Toast.makeText(getContext(), "SERVER CONNECTION is DONE", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Task is Created", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    public void editVariables() {
+        JsonObject json = new JsonObject();
+        try {
+            json.addProperty("username", username);
+            json.addProperty("tasktype", resultText);
+            json.addProperty("subject", resultText2);
+            json.addProperty("datetime", 0);
+            json.addProperty("taskstatus", taskstatus);
+            json.addProperty("duration", taskdurationinmilli);
+            Log.d("JSON INFO", json.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Ion.with(rootView.getContext()).load(serverURL + "/task/data")
+                .setJsonObjectBody(json).asJsonObject()
+                .setCallback(new FutureCallback<JsonObject>() {
+                    @Override
+                    public void onCompleted(Exception e, JsonObject result) {
+                        Toast.makeText(getContext(), "Task is finished", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -307,7 +350,7 @@ public class TaskTracker extends Fragment {
         this.year = yearOfCentury;
         this.month = monthOfYear+1;
         this.day = dayOfMonth;
-
+        selectedDate = year+"."+month+"."+day;
         dateView.setText("" + year + ". " + month + ". " + day + ".");
     }
 
@@ -316,7 +359,7 @@ public class TaskTracker extends Fragment {
         this.hour = hr;
         this.minute = mn;
         finedMinute = String.format("%02d", minute);
-
+        selectedTime = hour+":"+minute;
         timeView.setText("" + hour + " : " + finedMinute);
     }
 
@@ -329,11 +372,17 @@ public class TaskTracker extends Fragment {
             View v = inflater.inflate(R.layout.fragment_date, container, false);
 
             final DatePicker datePicker = (DatePicker) v.findViewById(R.id.datePicker);
-            Calendar c = Calendar.getInstance();
             datePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
                 @Override
                 public void onDateChanged(DatePicker view, int yearOfCentury, int monthOfYear, int dayOfMonth) {
                     ((TaskTracker)getTargetFragment()).setDate(yearOfCentury, monthOfYear, dayOfMonth);
+                    c.set(Calendar.HOUR_OF_DAY, 0);
+                    if(taskstatus == 1) {
+                        finishDateTime = c.getTimeInMillis();
+                    }
+                    else {
+                        startDateTime = c.getTimeInMillis();
+                    }
                 }
             });
             Button finishButton = (Button) v.findViewById(R.id.datebutton);
@@ -357,14 +406,23 @@ public class TaskTracker extends Fragment {
 
             final TimePicker timePicker = (TimePicker)v.findViewById(R.id.timePicker);
             timePicker.setIs24HourView(true);
-            Calendar c = Calendar.getInstance();
-            timePicker.setCurrentHour(c.get(Calendar.HOUR));
+            if(c.get(Calendar.HOUR_OF_DAY)>=15){
+                timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY)-15);
+            }
+            else{
+                timePicker.setCurrentHour(c.get(Calendar.HOUR_OF_DAY)+9);
+            }
             timePicker.setCurrentMinute(c.get(Calendar.MINUTE));
             timePicker.setOnTimeChangedListener(new TimePicker.OnTimeChangedListener() {
                 @Override
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minuteOfhour) {
-                    ((TaskTracker)getTargetFragment()).setTime(hourOfDay, minuteOfhour);
-
+                    ((TaskTracker) getTargetFragment()).setTime(hourOfDay, minuteOfhour);
+                    if (taskstatus == 1) {
+                        finishDateTime = finishDateTime + (c.get(Calendar.HOUR) * 60 * 60 * 1000) + (c.get(Calendar.MINUTE) * 60 * 1000);
+                    }
+                    else{
+                        startDateTime = startDateTime + (c.get(Calendar.HOUR) * 60 * 60 * 1000) + (c.get(Calendar.MINUTE) * 60 * 1000);
+                    }
                 }
             });
 
