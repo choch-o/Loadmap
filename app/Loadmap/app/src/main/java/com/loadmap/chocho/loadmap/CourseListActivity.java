@@ -86,7 +86,7 @@ public class CourseListActivity extends Activity {
             obj.put("name", mName);
 
             Log.d("COURSES IN JSON", obj.toString());
-            result = handler.execute(url, "POST", obj.toString()).get();
+            result = handler.execute(url, obj.toString()).get();
             Log.d("RESULT", result);
             // JSONObject obj2 = new JSONObject(result);
             // Log.d("RESULT", obj.toString());
