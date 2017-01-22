@@ -35,7 +35,7 @@ public class OkHttpHandler extends AsyncTask<String, Void, String> {
             }
 
             RequestBody requestBody = RequestBody.create(JSON, params[1]);
-            Log.d("REQUEST BODY", params[0]);
+            Log.d("REQUEST BODY", params[1]);
             request = new Request.Builder()
                     .url(params[0])
                     .post(requestBody)
