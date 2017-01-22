@@ -24,13 +24,13 @@ var Task = mongoose.model('task', taskDataSchema, 'task');
 var api = require('./api');
 
 app.get('/task/viewdata', function(req,res){
-	Task.find({}, function(err,results){
-		if(err) throw err;
+  Task.find({}, function(err,results){
+    if(err) throw err;
 
-		res.writeHead(200, {'Content-Type':'application/json'});
-		res.write(JSON.stringify(results));
-		res.end();
-	});
+    res.writeHead(200, {'Content-Type':'application/json'});
+    res.write(JSON.stringify(results));
+    res.end();
+  });
 });
 
 // app.get('/courses', api.getCourses);
