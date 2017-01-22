@@ -3,11 +3,13 @@ var mongoose = require('mongoose');
 var Course = require('./models/Course');
 var User = require('./models/User');
 exports.saveCourses = function(req, res) {
+  console.log("REQUESTTTTTT");
   User.findOne({username: req.body.username}, function(error, user) {
     if (user == null) {
       console.log(user);
       var newUser = new User(req.body);
       newUser.save();
+      res.send(user);
     } else {
       user.courses = req.body.courses || user.courses;
       user.save(function (err, user) {
@@ -23,7 +25,6 @@ exports.saveCourses = function(req, res) {
 
 exports.getCourses = function(req, res) {
   console.log("REQUEST");
-  console.log(req.params);
   User.findOne({username: req.params.user_id}, function(error, user) {
     if (user == null) {
       res.send("User not registerd");

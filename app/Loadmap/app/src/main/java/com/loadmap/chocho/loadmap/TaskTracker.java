@@ -35,11 +35,11 @@ import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 
+@RequiresApi(api = Build.VERSION_CODES.N)
 public class TaskTracker extends Fragment {
 
     int year, month, day, hour, minute;
     int taskstatus =0;
-    double randomKey;
 
     View rootView;
     TextView timeView,dateView;
@@ -51,11 +51,13 @@ public class TaskTracker extends Fragment {
     Button stopButton;
 
     String resultText;
-    String date, time;
-    // String serverURL = "http://52.78.101.202:3000";
-    String serverURL = "http://52.78.52.132:3000";
+
+    Date date;
+    String serverURL = "http://52.78.101.202:3000";
+
     String finedMinute;
 
+    DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (z Z)");
     LinearLayout date_change, time_change;
     SessionManager session;
 
@@ -127,8 +129,8 @@ public class TaskTracker extends Fragment {
         time_change = (LinearLayout)rootView.findViewById(R.id.time_change);
 
         TimeZone tz;
-        Date date = new Date();
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (z Z)");
+        date = new Date();
+
         tz = TimeZone.getTimeZone("Asia/Seoul"); df.setTimeZone(tz);
 
         dateView.setText(getDate(df.format(date)));
@@ -193,7 +195,6 @@ public class TaskTracker extends Fragment {
                 pauseButton.setVisibility(View.VISIBLE);
                 stopButton.setVisibility(View.VISIBLE);
                 taskstatus = 1;
-                randomKey = Math.random();
                 setVariables();
                 //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
             }
@@ -272,7 +273,6 @@ public class TaskTracker extends Fragment {
     public void setVariables() {
         JsonObject json = new JsonObject();
         try {
-            json.addProperty("randomkey", randomKey);
 //            json.addProperty("IDnumber", MainActivity.IDnumber);
 //            json.addProperty("username", MainActivity.username);
 //            json.addProperty("semester", MainActivity.semester);
@@ -280,8 +280,8 @@ public class TaskTracker extends Fragment {
 //            json.addProperty("subjectCode", MainActivity.subjectCode);
 //            json.addProperty("subjectName", MainActivity.subjectName);
             json.addProperty("tasktype", URLEncoder.encode(resultText, "utf-8"));
-            json.addProperty("date", date);
-            json.addProperty("time", time);
+            json.addProperty("date", getDate(df.format(date)));
+            json.addProperty("time", getTime(df.format(date)));
             json.addProperty("taskstatus", taskstatus);
         } catch (Exception e) {
             e.printStackTrace();
