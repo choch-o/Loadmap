@@ -24,6 +24,7 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
@@ -37,6 +38,8 @@ import java.util.HashMap;
 
 @RequiresApi(api = Build.VERSION_CODES.N)
 public class TaskTracker extends Fragment {
+
+    Course[] courses;
 
     int year, month, day, hour, minute;
     static int taskstatus =0;
@@ -53,6 +56,7 @@ public class TaskTracker extends Fragment {
 
     String resultText;
     String resultText2;
+    Course selectedCourse;
     String taskdurationstring;
     String selectedDate, selectedTime;
     Date date;
@@ -117,9 +121,9 @@ public class TaskTracker extends Fragment {
 //        과목명 Array에 담아서 받아야 함
 //        String[] option2 = getResources().getStringArray(R.array.spinnerArray2);
 
-        final String[] courses = getCourseFromServer();
+        final String[] courseNames = getCourseFromServer();
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>
-                (getContext(), android.R.layout.simple_spinner_dropdown_item, courses);
+                (getContext(), android.R.layout.simple_spinner_dropdown_item, courseNames);
 
         Spinner spinner = (Spinner)rootView.findViewById(R.id.spinner);
         Spinner spinner2 = (Spinner)rootView.findViewById(R.id.spinner2);
@@ -201,8 +205,9 @@ public class TaskTracker extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
-                resultText2 = courses[0];
-                Toast.makeText(getContext(),courses[0]= "courses[0]", Toast.LENGTH_SHORT).show();
+                selectedCourse = courses[0];
+                // resultText2 = courseNames[0];
+                Toast.makeText(getContext(),courseNames[0]= "courseNames[0]", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -282,6 +287,7 @@ public class TaskTracker extends Fragment {
         resultText2="";
         if(spinnerPCheck2.getSelectedItemPosition()>0){
             resultText2=(String)spinnerPCheck2.getAdapter().getItem(spinnerPCheck2.getSelectedItemPosition());
+            selectedCourse = courses[spinnerPCheck2.getSelectedItemPosition()];
         }
         else{
 //            resultText2=(String)spinnerPCheck2.getAdapter().getItem(0);
@@ -302,7 +308,7 @@ public class TaskTracker extends Fragment {
 
             json.addProperty("username", username);
             json.addProperty("tasktype", resultText);
-            json.addProperty("subject", resultText2);
+            json.add("subject", new Gson().toJsonTree(selectedCourse));
             json.addProperty("datetime", startDateTime);
             json.addProperty("taskstatus", taskstatus);
             json.addProperty("duration", 0);
@@ -326,7 +332,7 @@ public class TaskTracker extends Fragment {
         try {
             json.addProperty("username", username);
             json.addProperty("tasktype", resultText);
-            json.addProperty("subject", resultText2);
+            json.add("subject", new Gson().toJsonTree(selectedCourse));
             json.addProperty("datetime", 0);
             json.addProperty("taskstatus", taskstatus);
             json.addProperty("duration", taskdurationinmilli);
@@ -488,20 +494,24 @@ public class TaskTracker extends Fragment {
         OkHttpHandler handler = new OkHttpHandler();
 
         String result = null;
-        String[] courses;
+        String[] names;
         try {
             result = handler.execute(serverURL + "/courses/" + username).get();
             Log.d("GET COURSES RESULT", result);
             JSONObject userObj = new JSONObject(result);
             JSONArray courseArr = userObj.getJSONArray("courses");
-            courses = new String[courseArr.length()];
+            courses = new Course[courseArr.length()];
+            names = new String[courseArr.length()];
             for (int i = 0; i < courseArr.length(); i++) {
-
-                courses[i] = courseArr.getJSONObject(i).getString("name");
-                Log.d("COURSE ARR", courses[i]);
+                courses[i] = new Course();
+                JSONObject obj = courseArr.getJSONObject(i);
+                names[i] = obj.getString("name");
+                courses[i].setName(obj.getString("name"));
+                courses[i].setProfessor(obj.getString("professor"));
+                courses[i].setCode(obj.getString("code"));
+                courses[i].setSemester(obj.getString("semester"));
             }
-
-            return courses;
+            return names;
         } catch (Exception e) {
             e.printStackTrace();
             return new String[0];
