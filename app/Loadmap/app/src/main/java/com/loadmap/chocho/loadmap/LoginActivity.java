@@ -386,6 +386,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         courses[i].setSemester(rawTitle.substring(indexOfLBracket + 1, indexOfRBracket));
                         courses[i].setName(rawTitle.substring(indexOfRBracket + 2, indexOfLParen - 1));
                     } else {
+                        courses[i].setSemester("");
                         courses[i].setName(rawTitle.substring(0, indexOfLParen - 1));
                     }
 
