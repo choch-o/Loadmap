@@ -42,7 +42,8 @@ exports.getTasks = function(req, res) {
       username: req.params.user_id
     }},
     { $group: {
-      _id: "$subject",
+      _id: "$subject._id",
+      courseName: { $first: "$subject.name" },
       totalDuration: { $sum: "$duration" },
       tasks: { $push: "$$ROOT" }
     }}
