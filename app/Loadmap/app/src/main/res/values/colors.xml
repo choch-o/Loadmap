@@ -8,4 +8,14 @@
     <color name="color3">#B74F30</color>
     <color name="color4">#474A50</color>
     <color name="color5">#BE7367</color>
+    <color name="textcolor">#FCFFF5</color>
+    <color name="piecolor1">#91BED4</color>
+    <color name="piecolor2">#8CBEB2</color>
+    <color name="piecolor3">#FFE184</color>
+    <color name="piecolor4">	#207178</color>
+    <color name="piecolor5">#FF9666</color>
+    <color name="piecolor6">#7E566B</color>
+    <color name="piecolor7">#348899</color>
+
+
 </resources>

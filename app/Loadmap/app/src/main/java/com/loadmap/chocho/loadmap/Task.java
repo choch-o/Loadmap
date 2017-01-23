@@ -8,16 +8,16 @@ import java.util.Date;
 
 public class Task {
     private String username;
-    private String subject;
+    private Course subject;
     private String taskType;
-    private long startTime;
+    private long dateTime;
     private long duration;
 
-    public Task(String username, String subject, String taskType, long startTime, long duration) {
+    public Task(String username, Course subject, String taskType, long dateTime, long duration) {
         this.username = username;
         this.subject = subject;
         this.taskType = taskType;
-        this.startTime = startTime;
+        this.dateTime = dateTime;
         this.duration = duration;
     }
 
@@ -27,10 +27,10 @@ public class Task {
     public void setUsername(String username) {
         this.username = username;
     }
-    public String getSubject() {
+    public Course getSubject() {
         return subject;
     }
-    public void setSubject(String subject) {
+    public void setSubject(Course subject) {
         this.subject = subject;
     }
     public String getTaskType() {
@@ -39,11 +39,11 @@ public class Task {
     public void setTaskType(String taskType) {
         this.taskType = taskType;
     }
-    public long getStartTime() {
-        return startTime;
+    public long getDateTime() {
+        return dateTime;
     }
-    public void setStartTime(long startTime) {
-        this.startTime = startTime;
+    public void setDateTime(long startTime) {
+        this.dateTime = dateTime;
     }
     public long getDuration() {
         return duration;
