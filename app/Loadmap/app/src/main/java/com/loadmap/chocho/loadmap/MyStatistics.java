@@ -20,6 +20,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
@@ -34,7 +35,6 @@ public class MyStatistics extends Fragment {
     Task[] myTasks;
     public MyStatistics() {
     }
-
     public static MyStatistics newInstance(int sectionNumber) {
         MyStatistics fragment = new MyStatistics();
         Bundle args = new Bundle();
