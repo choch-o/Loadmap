@@ -3,9 +3,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.loadmap.chocho.loadmap.MyStatistics"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/color4">
 
-    <com.github.mikephil.charting.charts.BarChart
+<!--    <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/bar_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -14,10 +15,16 @@
         android:id="@+id/request_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="SEND REQUEST"/>
+        android:text="SEND REQUEST"/>-->
 
     <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pie_chart"
+        android:id="@+id/course_pie_chart"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5" />
+
+    <com.github.mikephil.charting.charts.PieChart
+        android:id="@+id/tasktype_pie_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="5" />

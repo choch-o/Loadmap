@@ -12,7 +12,12 @@ public class Course implements Parcelable {
     private String code;
     private String professor;
     private String semester;
+    private TaskType[] taskTypes;
+    private long totalDuration;
+    private String _id;
 
+    public String getId() { return _id; }
+    public void setId(String id) { this._id = id; }
     public String getName() {
         return name;
     }
@@ -37,7 +42,10 @@ public class Course implements Parcelable {
     public void setSemester(String semester) {
         this.semester = semester;
     }
-
+    public TaskType[] getTasks() { return taskTypes; }
+    public void setTasks(TaskType[] tasks) { this.taskTypes = taskTypes; }
+    public long getTotalDuration() { return totalDuration; }
+    public void setTotalDuration(long totalDuration) { this.totalDuration = totalDuration; }
 
     public static final Parcelable.Creator<Course> CREATOR
             = new Creator<Course>() {
