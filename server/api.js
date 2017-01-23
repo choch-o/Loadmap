@@ -41,11 +41,25 @@ exports.getTasks = function(req, res) {
     { $match: {
       username: req.params.user_id
     }},
+    {
+      $group: {
+        _id: {
+          course: "$subject",
+          tasktype: "$tasktype"
+        },
+        subtotalDuration: { $sum: "$duration" },
+        tasks: { $addToSet: "$$ROOT" }
+      }
+    },
     { $group: {
-      _id: "$subject._id",
-      courseName: { $first: "$subject.name" },
-      totalDuration: { $sum: "$duration" },
-      tasks: { $push: "$$ROOT" }
+      _id: "$_id.course._id",
+      courseName: { $first: "$_id.course.name" },
+      totalDuration: { $sum: "$subtotalDuration" },
+      tasksByType: { $addToSet: {
+        tasktype: "$_id.tasktype",
+        subtotalDuration: "$subtotalDuration",
+        tasks: "$tasks"
+      }}
     }}
   ], function (err, result) {
     if (err) {
