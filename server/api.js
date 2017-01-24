@@ -52,7 +52,7 @@ exports.getTasks = function(req, res) {
       }
     },
     { $group: {
-      _id: "$_id.course._id",
+      _id: "$_id.course.code",
       courseName: { $first: "$_id.course.name" },
       totalDuration: { $sum: "$subtotalDuration" },
       tasksByType: { $addToSet: {
