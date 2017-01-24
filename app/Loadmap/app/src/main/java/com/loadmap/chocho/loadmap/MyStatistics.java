@@ -125,7 +125,7 @@ public class MyStatistics extends Fragment {
         ArrayList<PieEntry> courseEntries = new ArrayList<PieEntry>();
 
         try {
-            result = handler.execute(serverURL + "/tasks/" + username).get();
+            result = handler.execute(serverURL + "/task/" + username).get();
             Log.d("GET TASKS RESULT", result);
             JSONArray tasksByCourse = new JSONArray(result);
             courses = new Course[tasksByCourse.length()];
