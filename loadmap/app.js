@@ -15,12 +15,13 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 var courses = require('./routes/courses');
 var task = require('./routes/task');
+var search = require('./routes/search');
 
 var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 app.use(favicon());
 app.use(logger('dev'));
@@ -34,6 +35,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/courses', courses);
 app.use('/task', task);
+app.use('/search', search);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
