@@ -22,8 +22,6 @@ public class PieValueFormatter implements IValueFormatter {
 
     @Override
     public String getFormattedValue(float value, Entry entry, int dataSetIndex, ViewPortHandler viewPortHandler) {
-        // write your logic here
-        Log.d("FORMATTER VALUE", Float.toString(value));
         float millis = entry.getY();
         long minute = (long) (millis / (1000 * 60)) % 60;
         long hour = (long) (millis / (1000 * 60 * 60)) % 24;

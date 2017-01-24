@@ -21,11 +21,19 @@
         android:id="@+id/course_pie_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5" />
+        android:layout_weight="4" />
 
     <com.github.mikephil.charting.charts.PieChart
         android:id="@+id/tasktype_pie_chart"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="5" />
+        android:layout_weight="4" />
+    <Button
+        android:id="@+id/logout_button"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:textColor="@color/color3"
+        android:background="@color/color4"
+        android:text="LOGOUT"/>
 </LinearLayout>

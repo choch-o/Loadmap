@@ -20,6 +20,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -50,7 +51,6 @@ public class TaskTracker extends Fragment {
     View rootView;
     TextView timeView,dateView;
 
-    Button logoutButton;
     Button startButton;
     Button pauseButton;
     Button resumeButton;
@@ -68,7 +68,7 @@ public class TaskTracker extends Fragment {
     String finedMinute;
 
     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss (z Z)");
-    LinearLayout date_change, time_change;
+    RelativeLayout date_change, time_change;
     SessionManager session;
 
     String name;
@@ -107,17 +107,10 @@ public class TaskTracker extends Fragment {
         name = user.get(SessionManager.KEY_NAME);
         username = user.get(SessionManager.KEY_USERNAME);
 
-        logoutButton = (Button)rootView.findViewById(R.id.logout_button);
-        logoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                session.logoutUser();
-            }
-        });
 
         String[] option = getResources().getStringArray(R.array.spinnerArray);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
-                (getContext(), android.R.layout.simple_spinner_dropdown_item, option);
+                (getContext(), R.layout.spinner_item, option);
 
 
 //        과목명 Array에 담아서 받아야 함
@@ -125,7 +118,7 @@ public class TaskTracker extends Fragment {
 
         final String[] courseNames = getCourseFromServer();
         ArrayAdapter<String> adapter2 = new ArrayAdapter<String>
-                (getContext(), android.R.layout.simple_spinner_dropdown_item, courseNames);
+                (getContext(), R.layout.spinner_item_dark, courseNames);
 
         Spinner spinner = (Spinner)rootView.findViewById(R.id.spinner);
         Spinner spinner2 = (Spinner)rootView.findViewById(R.id.spinner2);
@@ -138,8 +131,8 @@ public class TaskTracker extends Fragment {
         resumeButton = (Button)rootView.findViewById(R.id.resumeButton);
         stopButton = (Button)rootView.findViewById(R.id.stopButton);
 
-        date_change = (LinearLayout)rootView.findViewById(R.id.date_change);
-        time_change = (LinearLayout )rootView.findViewById(R.id.time_change);
+        date_change = (RelativeLayout) rootView.findViewById(R.id.date_change);
+        time_change = (RelativeLayout)rootView.findViewById(R.id.time_change);
 
         TimeZone tz;
         date = new Date();
@@ -189,7 +182,7 @@ public class TaskTracker extends Fragment {
 
             }
         });
-
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
         getSpinner(rootView, R.id.spinner).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -205,6 +198,7 @@ public class TaskTracker extends Fragment {
             }
         });
 
+        adapter2.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner2.setAdapter(adapter2);
         getSpinner(rootView, R.id.spinner2).setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -558,7 +552,7 @@ public class TaskTracker extends Fragment {
             strDay = new String(charDay, 0, charDay.length);
         }
 
-        String strDate = strYear+"년 "+strMonth + "월 " + strDay + "일";
+        String strDate = strYear+". "+strMonth + ". " + strDay;
         return strDate;
     }
 

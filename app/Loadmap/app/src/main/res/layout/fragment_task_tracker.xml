@@ -3,86 +3,101 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.loadmap.chocho.loadmap.TaskTracker"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/color4">
 
-    <Button
-        android:id="@+id/logout_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Logout"/>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:layout_weight="2"
+        android:background="@color/color4_dark"
+        >
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/spinner2"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/spinner_bg_dark"
+            android:prompt="@string/spinnerPrompt2" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:fontFamily="sans-serif-light"
+            android:textAlignment="center"
             android:text="과목"
-            android:layout_marginTop="10dp"
-            android:textSize="20dp"/>
+            android:textSize="@dimen/category_text"
+            android:textColor="@color/color2"/>
+    </RelativeLayout>
 
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner2"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:prompt="@string/spinnerPrompt2"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:layout_weight="2"
+        >
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/spinner"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginStart="30dp"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/spinner_bg"
+            android:prompt="@string/spinnerPrompt"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="종류"
-            android:layout_marginTop="10dp"
-            android:textSize="20dp"/>
+            android:fontFamily="sans-serif-light"
+            android:layout_margin="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/color2"
+            android:textSize="@dimen/category_text" />
+    </RelativeLayout>
 
-        <Spinner
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/spinner"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:prompt="@string/spinnerPrompt"/>
-    </LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:orientation="vertical"
         android:id="@+id/date_change"
         android:clickable="true"
+        android:background="@color/color4_dark"
         >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="작업 날짜"
-            android:textSize="20dp"
-
+            android:text="날짜"
+            android:fontFamily="sans-serif-light"
+            android:textSize="@dimen/category_text"
+            android:layout_margin="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/color2"
             />
-
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/dateView"
-            android:textSize="20dp"
+            android:fontFamily="sans-serif-light"
+            android:textSize="@dimen/content_text"
+            android:textColor="@color/listtext"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
             />
+    </RelativeLayout>
 
-
-
-    </LinearLayout>
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="2"
         android:orientation="vertical"
         android:id="@+id/time_change"
         android:clickable="true"
@@ -90,35 +105,44 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="명령 입력 시간"
-            android:textSize="20dp"
+            android:text="시간"
+            android:fontFamily="sans-serif-light"
+            android:textSize="@dimen/category_text"
+            android:layout_margin="10dp"
+            android:textAlignment="center"
+            android:textColor="@color/color2"
             />
-
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/timeView"
-            android:textSize="20dp"
+            android:fontFamily="sans-serif-light"
+            android:textSize="@dimen/content_text"
+            android:textColor="@color/listtext"
+            android:gravity="center_vertical"
+            android:textAlignment="center"
             />
-    </LinearLayout>
+    </RelativeLayout>
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <Button
-            android:layout_width="320dp"
-            android:layout_height="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:id="@+id/stopButton"
             android:visibility="gone"
-            android:text="STOP"/>
+            android:text="STOP"
+            android:background="@color/color3"
+            android:textColor="@color/color2"/>
 
         <Button
             android:layout_width="140dp"
             android:layout_height="60dp"
             android:layout_gravity="center_vertical"
-            android:layout_marginLeft="32dp"
             android:id="@+id/pauseButton"
             android:visibility="gone"
             android:text="PAUSE"/>
@@ -132,12 +156,14 @@
             android:text="RESUME"/>
 
         <Button
-            android:layout_width="320dp"
-            android:layout_height="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:id="@+id/startButton"
             android:visibility="visible"
-            android:text="START"/>
+            android:text="START"
+            android:background="@color/color3"
+            android:textColor="@color/color2"/>
     </FrameLayout>
 
 </LinearLayout>
