@@ -42,6 +42,7 @@ public class MyStatistics extends Fragment {
     private BarChart barChart;
     static PieChart coursePieChart;
     static PieChart tasktypePieChart;
+    static BarChart courseBarChart;
     static Course[] courses;
     static HashMap<String, TaskType[]> courseTypeHm = new HashMap<String, TaskType[]>();
 
@@ -68,6 +69,7 @@ public class MyStatistics extends Fragment {
         // barChart = (BarChart) rootView.findViewById(R.id.bar_chart);
         coursePieChart = (PieChart) rootView.findViewById(R.id.course_pie_chart);
         tasktypePieChart = (PieChart) rootView.findViewById(R.id.tasktype_pie_chart);
+        courseBarChart = (BarChart) rootView.findViewById(R.id.tasktype_pie_chart);
 
         session = new SessionManager(getActivity());
         session.checkLogin();
@@ -99,22 +101,6 @@ public class MyStatistics extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-    }
-
-    void drawBarChart() {
-        List<BarEntry> entries = new ArrayList<BarEntry>();
-        // for (Task task : myTasks) {
-        for (int i = 0; i < myTasks.length; i++) {
-            Task task = myTasks[i];
-            Log.d("DRAWING TASKS", Long.toString(task.getDateTime()));
-            Log.d("DURATION", Long.toString(task.getDuration()));
-            // entries.add(new BarEntry(task.getStartTime(), task.getDuration()));
-            entries.add(new BarEntry(i, task.getDuration()));
-        }
-        BarDataSet dataSet = new BarDataSet(entries, "Load");
-        BarData barData = new BarData(dataSet);
-        barChart.setData(barData);
-        barChart.invalidate();
     }
 
 
@@ -155,6 +141,62 @@ public class MyStatistics extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void getTasksFromServer2() {
+        OkHttpHandler handler = new OkHttpHandler();
+
+        String result = null;
+        ArrayList<BarEntry> courseEntries = new ArrayList<BarEntry>();
+
+        try {
+            result = handler.execute(serverURL + "/task/" + username).get();
+            Log.d("GET TASKS RESULT2", result);
+            JSONArray tasksByCourse = new JSONArray(result);
+            courses = new Course[tasksByCourse.length()];
+            for (int i = 0; i < tasksByCourse.length(); i++) {
+                JSONObject obj = tasksByCourse.getJSONObject(i);
+                courseEntries.add(new BarEntry((obj.getInt("period")), (obj.getLong("totalDuration"))));
+                courses[i] = new Course();
+                courses[i].setPeriod(obj.getInt("period"));
+                courses[i].setTotalDuration(obj.getLong("totalDuration"));
+                courses[i].setId(obj.getString("_id"));
+
+//                JSONArray tasksByTypes = obj.getJSONArray("tasksByType");
+//                TaskType[] taskTypes = new TaskType[tasksByTypes.length()];
+//                for (int j = 0; j < tasksByTypes.length(); j++) {
+//                    taskTypes[j] = new TaskType();
+//                    JSONObject type = tasksByTypes.getJSONObject(j);
+//                    taskTypes[j].setTaskType(type.getString("tasktype"));
+//                    taskTypes[j].setTotalDuration(type.getLong("subtotalDuration"));
+//                    // taskTypes[i].setTasks(type.get);
+//                }
+//                courses[i].setTasks(taskTypes);
+//
+//                courseTypeHm.put(obj.getString("courseName"), taskTypes);
+            }
+
+            drawBarChart(courseEntries, courseBarChart, true, "MY COURSES");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void drawBarChart(final ArrayList<BarEntry> barEntries, BarChart barChart, boolean course,
+                                    String centerText) {
+        List<BarEntry> entries = new ArrayList<BarEntry>();
+        // for (Task task : myTasks) {
+        for (int i = 0; i < myTasks.length; i++) {
+            Task task = myTasks[i];
+            Log.d("DRAWING TASKS", Long.toString(task.getDateTime()));
+            Log.d("DURATION", Long.toString(task.getDuration()));
+            // entries.add(new BarEntry(task.getStartTime(), task.getDuration()));
+            entries.add(new BarEntry(i, task.getDuration()));
+        }
+        BarDataSet dataSet = new BarDataSet(entries, "Load");
+        BarData barData = new BarData(dataSet);
+        barChart.setData(barData);
+        barChart.invalidate();
     }
 
     public static void drawPieChart(final ArrayList<PieEntry> pieEntries, PieChart pieChart, boolean course,

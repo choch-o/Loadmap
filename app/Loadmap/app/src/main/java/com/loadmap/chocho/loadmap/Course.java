@@ -12,6 +12,7 @@ public class Course implements Parcelable {
     private String code;
     private String professor;
     private String semester;
+    private int period;
     private TaskType[] taskTypes;
     private long totalDuration;
     private String _id;
@@ -21,8 +22,12 @@ public class Course implements Parcelable {
     public String getName() {
         return name;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String name) {this.name = name;}
+    public int getPeriod() {
+        return period;
+    }
+    public void setPeriod(int period) {
+        this.period = period;
     }
     public String getCode() {
         return code;
