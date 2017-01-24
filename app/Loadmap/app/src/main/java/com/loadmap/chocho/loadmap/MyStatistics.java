@@ -1,5 +1,6 @@
 package com.loadmap.chocho.loadmap;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -35,18 +36,19 @@ import java.util.List;
 import java.util.Random;
 
 public class MyStatistics extends Fragment {
+    static Context mContext;
 
     Button logoutButton;
     private BarChart barChart;
-    private PieChart coursePieChart;
-    private PieChart tasktypePieChart;
-    Course[] courses;
-    HashMap<String, TaskType[]> courseTypeHm = new HashMap<String, TaskType[]>();
+    static PieChart coursePieChart;
+    static PieChart tasktypePieChart;
+    static Course[] courses;
+    static HashMap<String, TaskType[]> courseTypeHm = new HashMap<String, TaskType[]>();
 
-    String serverURL = "http://52.78.52.132:3000";
+    static String serverURL = "http://52.78.52.132:3000";
     private static final String ARG_SECTION_NUMBER = "section_number";
     private SessionManager session;
-    private String username;
+    static String username;
     Task[] myTasks;
     public MyStatistics() {
     }
@@ -62,7 +64,7 @@ public class MyStatistics extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_my_statistics, container, false);
-
+        mContext = getActivity();
         // barChart = (BarChart) rootView.findViewById(R.id.bar_chart);
         coursePieChart = (PieChart) rootView.findViewById(R.id.course_pie_chart);
         tasktypePieChart = (PieChart) rootView.findViewById(R.id.tasktype_pie_chart);
@@ -89,9 +91,10 @@ public class MyStatistics extends Fragment {
         });
         */
 
-        getTasksFromServer();
+
         return rootView;
     }
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -115,7 +118,7 @@ public class MyStatistics extends Fragment {
     }
 
 
-    void getTasksFromServer() {
+    public static void getTasksFromServer() {
         OkHttpHandler handler = new OkHttpHandler();
 
         String result = null;
@@ -154,7 +157,7 @@ public class MyStatistics extends Fragment {
         }
     }
 
-    void drawPieChart(final ArrayList<PieEntry> pieEntries, PieChart pieChart, boolean course,
+    public static void drawPieChart(final ArrayList<PieEntry> pieEntries, PieChart pieChart, boolean course,
                       String centerText) {
 
         pieChart.setUsePercentValues(true);
@@ -187,13 +190,13 @@ public class MyStatistics extends Fragment {
         PieDataSet dataSet = new PieDataSet(pieEntries, "Tasks by Courses");
         // Pie chart styling
 
-        int[] colors = { getResources().getColor(R.color.piecolor2),
-                getResources().getColor(R.color.piecolor4),
-                getResources().getColor(R.color.piecolor5),
-                getResources().getColor(R.color.piecolor1),
-                getResources().getColor(R.color.piecolor7),
-                getResources().getColor(R.color.piecolor3),
-                getResources().getColor(R.color.piecolor6)
+        int[] colors = { mContext.getResources().getColor(R.color.piecolor2),
+                mContext.getResources().getColor(R.color.piecolor4),
+                mContext.getResources().getColor(R.color.piecolor5),
+                mContext.getResources().getColor(R.color.piecolor1),
+                mContext.getResources().getColor(R.color.piecolor7),
+                mContext.getResources().getColor(R.color.piecolor3),
+                mContext.getResources().getColor(R.color.piecolor6)
         };
 
         shuffleArray(colors);
@@ -204,14 +207,14 @@ public class MyStatistics extends Fragment {
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PieValueFormatter());
         data.setValueTextSize(11f);
-        data.setValueTextColor(getResources().getColor(R.color.textcolor));
+        data.setValueTextColor(mContext.getResources().getColor(R.color.textcolor));
 
         pieChart.setCenterText(centerText);
-        pieChart.setCenterTextColor(getResources().getColor(R.color.textcolor));
+        pieChart.setCenterTextColor(mContext.getResources().getColor(R.color.textcolor));
         pieChart.setDrawHoleEnabled(true);
-        pieChart.setHoleColor(getResources().getColor(R.color.color4));
+        pieChart.setHoleColor(mContext.getResources().getColor(R.color.color4));
 
-        pieChart.setTransparentCircleColor(getResources().getColor(R.color.color4));
+        pieChart.setTransparentCircleColor(mContext.getResources().getColor(R.color.color4));
         pieChart.setTransparentCircleAlpha(110);
 
         pieChart.setHoleRadius(45f);
@@ -219,7 +222,7 @@ public class MyStatistics extends Fragment {
 
         pieChart.setHighlightPerTapEnabled(true);
 
-        pieChart.setEntryLabelColor(getResources().getColor(R.color.textcolor));
+        pieChart.setEntryLabelColor(mContext.getResources().getColor(R.color.textcolor));
         pieChart.setEntryLabelTextSize(11f);
 
         pieChart.setData(data);
