@@ -116,15 +116,16 @@ exports.taskData = function(req, res) {
         console.log("DONE UPDATE TASK " + results);
       }); 
     } else { */ 
-      var newTask = {
+      var newTask = new Task({
         username : req.body['username'],
         subject : req.body['subject'],
         tasktype : req.body['tasktype'],
         datetime : req.body['datetime'],
         taskstatus : req.body['taskstatus'],
         duration : req.body['duration']
-      };
-
+      });
+	newTask.save();
+	
 /*      Task.findOneAndUpdate({username : req.body['username']}, newTask, {upsert: true, new: true}, function (err, results){
         if(err) throw err;
         console.log("DONE ENROLL NEW TASK " + results);
