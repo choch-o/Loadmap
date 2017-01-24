@@ -100,7 +100,7 @@ exports.viewData = function(req, res) {
 exports.taskData = function(req, res) {
   console.log("[task/data] Got request");
 
-  Task.find({username:req.body['username']}, function(err, result){
+/*  Task.find({username:req.body['username']}, function(err, result){
     console.log("          "+result)
     if(result.length>0){
       var newTask={};
@@ -114,8 +114,8 @@ exports.taskData = function(req, res) {
       Task.findOneAndUpdate({username:req.body['username']}, newTask, {}, function(err,results){
         if (err) throw err;
         console.log("DONE UPDATE TASK " + results);
-      });
-    } else {
+      }); 
+    } else { */ 
       var newTask = {
         username : req.body['username'],
         subject : req.body['subject'],
@@ -125,12 +125,12 @@ exports.taskData = function(req, res) {
         duration : req.body['duration']
       };
 
-      Task.findOneAndUpdate({username : req.body['username']}, newTask, {upsert: true, new: true}, function (err, results){
+/*      Task.findOneAndUpdate({username : req.body['username']}, newTask, {upsert: true, new: true}, function (err, results){
         if(err) throw err;
         console.log("DONE ENROLL NEW TASK " + results);
-      });
-    }
-  });
+      }); */
+//    }
+//  });
   res.writeHead(200, {'Content-Type':'application/json'});
   //	res.write(JSON,stringify({result: 'OK'}));
   res.end();
