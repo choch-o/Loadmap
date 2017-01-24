@@ -36,6 +36,7 @@ import java.util.Random;
 
 public class MyStatistics extends Fragment {
 
+    Button logoutButton;
     private BarChart barChart;
     private PieChart coursePieChart;
     private PieChart tasktypePieChart;
@@ -71,6 +72,13 @@ public class MyStatistics extends Fragment {
         HashMap<String, String> user = session.getUserDetails();
         username = user.get(SessionManager.KEY_USERNAME);
 
+        logoutButton = (Button)rootView.findViewById(R.id.logout_button);
+        logoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View arg0) {
+                session.logoutUser();
+            }
+        });
         /*
         Button reqButton = (Button) rootView.findViewById(R.id.request_button);
         reqButton.setOnClickListener(new View.OnClickListener() {
@@ -140,13 +148,14 @@ public class MyStatistics extends Fragment {
                 courseTypeHm.put(obj.getString("courseName"), taskTypes);
             }
 
-            drawPieChart(courseEntries, coursePieChart, true);
+            drawPieChart(courseEntries, coursePieChart, true, "MY COURSES");
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    void drawPieChart(final ArrayList<PieEntry> pieEntries, PieChart pieChart, boolean course) {
+    void drawPieChart(final ArrayList<PieEntry> pieEntries, PieChart pieChart, boolean course,
+                      String centerText) {
 
         pieChart.setUsePercentValues(true);
         if (course) {
@@ -156,21 +165,14 @@ public class MyStatistics extends Fragment {
                     final ArrayList<PieEntry> taskTypeEntries = new ArrayList<PieEntry>();
                     if (e == null)
                         return;
-                    Log.d("ENTRY INFO", e.toString());
-                    Log.d("ENT IF", pieEntries.get((int) h.getX()).getLabel());
-                    Log.d("GET X", Float.toString(h.getX()));
-                    Log.d("GET Y", Float.toString(h.getY()));
-                    Log.d("VALUE SELECTED", h.toString());
-
-                    // Log.d("VALUE SELECTED", courseTypeHm.get(pieEntries.get((int) h.getX()).getLabel()).toString());
-                    Log.d("LABEL", pieEntries.get((int) h.getX()).getLabel());
-                    TaskType[] result = courseTypeHm.get(pieEntries.get((int) h.getX()).getLabel());
+                    String selectedCourse = pieEntries.get((int) h.getX()).getLabel();
+                    TaskType[] result = courseTypeHm.get(selectedCourse);
                     Log.d("Result length", Integer.toString(result.length));
                     for (TaskType tt : result) {
                         taskTypeEntries.add(new PieEntry(tt.getTotalDuration(), tt.getTaskType()));
                     }
                     tasktypePieChart.invalidate();
-                    drawPieChart(taskTypeEntries, tasktypePieChart, false);
+                    drawPieChart(taskTypeEntries, tasktypePieChart, false, selectedCourse);
                 }
 
                 @Override
@@ -204,6 +206,8 @@ public class MyStatistics extends Fragment {
         data.setValueTextSize(11f);
         data.setValueTextColor(getResources().getColor(R.color.textcolor));
 
+        pieChart.setCenterText(centerText);
+        pieChart.setCenterTextColor(getResources().getColor(R.color.textcolor));
         pieChart.setDrawHoleEnabled(true);
         pieChart.setHoleColor(getResources().getColor(R.color.color4));
 
@@ -223,8 +227,9 @@ public class MyStatistics extends Fragment {
         pieChart.animateY(1400, Easing.EasingOption.EaseInOutQuad);
 
         Legend legend = pieChart.getLegend();
+        legend.setEnabled(false);
 
-
+        pieChart.getDescription().setEnabled(false);
         pieChart.invalidate();
     }
 
