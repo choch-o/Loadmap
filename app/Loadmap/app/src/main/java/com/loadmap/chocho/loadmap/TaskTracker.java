@@ -148,26 +148,52 @@ public class TaskTracker extends Fragment {
         tz = TimeZone.getTimeZone("Asia/Seoul"); df.setTimeZone(tz);
 
         pref = getContext().getSharedPreferences("pref", MODE_PRIVATE);
-
-
-
-        String strTimeMilli = String.format("%tQ",date);
-        Log.d("@@@@@@strTimeMilli : ",strTimeMilli);
-        startDateTime = c.getTimeInMillis();
-        Log.d("@@@@@@startDateTime : ",Long.toString(c.getTimeInMillis()));
-        finishDateTime = c.getTimeInMillis();
+        final SharedPreferences.Editor editor = pref.edit();
 
         c.set(Calendar.SECOND,0);
         c.set(Calendar.MILLISECOND,0);
 
-        year = c.get(Calendar.YEAR);
-        month = c.get(Calendar.MONTH);
-        day = c.get(Calendar.DAY_OF_MONTH);
+        String strTimeMilli = String.format("%tQ",date);
+        Log.d("@@@@@@strTimeMilli : ",strTimeMilli);
+        startDateTime = c.getTimeInMillis();
+        Long alwaysCurrentTime = c.getTimeInMillis();
+        Long startDateTimeKorea = alwaysCurrentTime;
+        Date initialDateTime = new Date(startDateTimeKorea);
+        Log.d("@@@@@@startDateTime : ",Long.toString(c.getTimeInMillis()));
+        finishDateTime = c.getTimeInMillis();
 
-        dateView.setText(getMyDate(df.format(date)));
-        timeView.setText(getMyTime(df.format(date)));
+
+        year = initialDateTime.getYear()+1900;
+        month = initialDateTime.getMonth();
+        day = initialDateTime.getDate();
+        hour = initialDateTime.getHours();
+        minute = initialDateTime.getMinutes();
 
 
+//        month = c.get(Calendar.MONTH);
+//        day = c.get(Calendar.DAY_OF_MONTH);
+//        hour = c.get(Calendar.HOUR_OF_DAY);
+//        minute = c.get(Calendar.MINUTE);
+        Log.d("variables : ", "year:"+year+"month:"+month+"day:"+day+"hour:"+hour+"minute:"+minute);
+        dateView.setText(year+"년 "+(month+1)+"월 "+day+"일");
+        timeView.setText(hour+"시 "+minute+"분");
+
+//        dateView.setText(getMyDate(df.format(date)));
+//        timeView.setText(getMyTime(df.format(date)));
+
+        if(!(pref.getString("username", "").equals(""))) {
+            username = pref.getString("username", "");
+            resultText = pref.getString("tasktype", "");
+//            new Gson().toJsonTree(selectedCourse) = pref.getString("subject", null);
+            startDateTime = Long.parseLong(pref.getString("datetime", ""));
+            taskstatus = Integer.parseInt(pref.getString("taskstatus", ""));
+
+            editor.clear();
+            editor.commit();
+
+            startButton.setVisibility(View.GONE);
+            stopButton.setVisibility(View.VISIBLE);
+        }
 
         date_change.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,26 +243,14 @@ public class TaskTracker extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
+                Log.d("NOTHING SELECTED", "NOTHINGGG");
                 selectedCourse = courses[0];
                  resultText2 = courseNames[0];
                 Toast.makeText(getContext(),courseNames[0]= "courseNames[0]", Toast.LENGTH_SHORT).show();
             }
         });
 
-        if(!(pref.getString("username", "").equals(""))) {
-            username = pref.getString("username", "");
-            resultText = pref.getString("tasktype", "");
-//            new Gson().toJsonTree(selectedCourse) = pref.getString("subject", null);
-            startDateTime = Long.parseLong(pref.getString("datetime", ""));
-            taskstatus = Integer.parseInt(pref.getString("taskstatus", ""));
 
-            SharedPreferences.Editor editor = pref.edit();
-            editor.clear();
-            editor.commit();
-
-            startButton.setVisibility(View.GONE);
-            stopButton.setVisibility(View.VISIBLE);
-        }
 
             startButton.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -247,7 +261,7 @@ public class TaskTracker extends Fragment {
                     taskstatus = 1;
 //                c.set(Calendar.SECOND,0);
 //                c.set(Calendar.MILLISECOND,0);
-                    setVariables();
+//                    setVariables();
 
 
                     SharedPreferences.Editor editor = pref.edit();
@@ -265,7 +279,7 @@ public class TaskTracker extends Fragment {
                     Log.d("SAVEDtasktype : ", pref.getString("tasktype", ""));
                     Log.d("subject : ", (new Gson().toJsonTree(selectedCourse)).toString());
                     Log.d("SAVEDstartdatetime : ", (new Date(startDateTime)).toString());
-                    Log.d("SAVEDstartdatetime : ", pref.getString("tasktype", ""));
+                    Log.d("SAVEDstartdatetime : ", new Date(Long.parseLong(pref.getString("datetime",""))).toString());
                     Log.d("taskstatus : ", Integer.toString(taskstatus));
                     //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
                 }
@@ -308,6 +322,9 @@ public class TaskTracker extends Fragment {
                     Log.d("@@@@@@@@@@@@duration: ", Long.toString(taskdurationinmilli));
 //                getDuration(new Date(), );
                     editVariables();
+                    editor.clear();
+                    editor.commit();
+
                     //서버로 {과목, 종류, 날짜, 시간, 시작/일시정지/재개/종료} 전송
                 }
             });
@@ -339,7 +356,8 @@ public class TaskTracker extends Fragment {
             resultText2=(String)spinnerPCheck2.getAdapter().getItem(spinnerPCheck2.getSelectedItemPosition());
             selectedCourse = courses[spinnerPCheck2.getSelectedItemPosition()];
         }
-        else{
+        else if (spinnerPCheck2.getSelectedItemPosition() == 0){
+            selectedCourse = courses[0];
 //            resultText2=(String)spinnerPCheck2.getAdapter().getItem(0);
 //            ((TextView)findViewById(R.id.textView1)).setText(resultText);
         }
@@ -408,7 +426,7 @@ public class TaskTracker extends Fragment {
         this.year = yearOfCentury;
         this.month = monthOfYear;
         this.day = dayOfMonth;
-        selectedDate = year+"."+month+"."+day;
+        selectedDate = year+"년 "+month+"월 "+day+"일";
         dateView.setText("" + year + ". " + month+1 + ". " + day + ".");
     }
 
@@ -418,7 +436,7 @@ public class TaskTracker extends Fragment {
         this.minute = mn;
         finedMinute = String.format("%02d", minute);
         selectedTime = hour+":"+minute;
-        timeView.setText("" + hour + " : " + finedMinute);
+        timeView.setText(hour + "시 " + finedMinute+ "분" );
     }
 
     public static class MyDialogFragment1 extends DialogFragment {
@@ -431,15 +449,17 @@ public class TaskTracker extends Fragment {
 
             final DatePicker datePicker = (DatePicker) v.findViewById(R.id.datePicker);
 
-            datePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener() {
+//            datePicker.init(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH), new DatePicker.OnDateChangedListener()
+            datePicker.init(((TaskTracker)getTargetFragment()).year, ((TaskTracker)getTargetFragment()).month, ((TaskTracker)getTargetFragment()).day, new DatePicker.OnDateChangedListener(){
                 @Override
                 public void onDateChanged(DatePicker view, int yearOfCentury, int monthOfYear, int dayOfMonth) {
                     ((TaskTracker)getTargetFragment()).setDate(yearOfCentury, monthOfYear, dayOfMonth);
+                    ((TaskTracker)getTargetFragment()).year = yearOfCentury;
+                    ((TaskTracker)getTargetFragment()).month = monthOfYear;
+                    ((TaskTracker)getTargetFragment()).day = dayOfMonth;
                     c.set(yearOfCentury,monthOfYear,dayOfMonth);
-                    c.set(Calendar.HOUR_OF_DAY, -9);
-                    c.set(Calendar.MINUTE,0);
-                    c.set(Calendar.SECOND,0);
-                    c.set(Calendar.MILLISECOND,0);
+                    c.set(Calendar.HOUR_OF_DAY, ((TaskTracker)getTargetFragment()).hour);
+                    c.set(Calendar.MINUTE,((TaskTracker)getTargetFragment()).minute);
                     Log.d("@Calendar in Millis : ",Long.toString(c.getTimeInMillis()));
                     Log.d("month at dialog1 : ",Integer.toString(((TaskTracker) getTargetFragment()).month));
 //                    c.set(Calendar.HOUR_OF_DAY, 23);
@@ -450,11 +470,12 @@ public class TaskTracker extends Fragment {
 
                     if(taskstatus == 1) {
                         Log.d("taskstaus must be 1", Integer.toString(taskstatus));
-                        finishDateTime = c.getTimeInMillis();
+                        finishDateTime = c.getTimeInMillis()-32400000;
+                        Log.d("FINISHSIMPLEFORMAT : ", (new Date(finishDateTime)).toString());
                                             }
                     else {
                         Log.d("taskstaus must be 0", Integer.toString(taskstatus));
-                        startDateTime = c.getTimeInMillis();
+                        startDateTime = c.getTimeInMillis()-32400000;
                         Log.d("STARTSIMPLEFORMAT : ", (new Date(startDateTime)).toString());
                     }
                 }
@@ -492,8 +513,10 @@ public class TaskTracker extends Fragment {
                 @Override
                 public void onTimeChanged(TimePicker view, int hourOfDay, int minuteOfhour) {
                     ((TaskTracker) getTargetFragment()).setTime(hourOfDay, minuteOfhour);
-                    c.set(((TaskTracker) getTargetFragment()).year, (((TaskTracker) getTargetFragment()).month), ((TaskTracker) getTargetFragment()).day, hourOfDay, minuteOfhour,0);
+                    c.set(((TaskTracker) getTargetFragment()).year, ((TaskTracker) getTargetFragment()).month, ((TaskTracker) getTargetFragment()).day, hourOfDay, minuteOfhour,0);
                     Log.d("month at dialog2 : ",Integer.toString(((TaskTracker) getTargetFragment()).month));
+                    ((TaskTracker) getTargetFragment()).hour = hourOfDay;
+                    ((TaskTracker) getTargetFragment()).minute = minuteOfhour;
 
                     if (taskstatus == 1) {
                         Log.d("taskstaus must be 1", Integer.toString(taskstatus));
